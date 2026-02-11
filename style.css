@@ -4,103 +4,167 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 html, body {
   height: 100%;
   width: 100%;
-  background-color: #0b1020; 
+  background-color: #0a0f1f;  
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #e5e7eb;
+  color: #e6e8ee;             
 }
 
 .container {
   height: 70vh;
   width: 80%;
-  padding: 2rem;
-
-  background-color: #111736;   
-  border: 1px solid #d3d6e1;
-  border-radius: 1rem;
+  padding: 2.25rem;       
+  background-color: #12183a;  
+  border: 1px solid #2a3470; 
+  border-radius: 1.1rem;
 
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 1rem;
-}
+  gap: 1.25rem;             
 
+  box-shadow: 0 18px 36px rgba(0,0,0,0.45);
+}
 
 #heading {
   text-align: center;
   font-size: 2rem;
-  color: #f8fafc;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;   
 }
 
-.stats{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-
-}
-.l {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-}
 .typingWrapper {
   position: relative;
-  min-height: 180px;
+  min-height: 190px;          
   width: 100%;
-  margin: 0 auto;
 
-  background-color: #0f1730;
-  border: 1px solid #22306a;
-  border-radius: 12px;
+  background-color: #0f1733;
+  border: 1px solid #2a3675;
+  border-radius: 14px;
 
-  padding: 1.25rem;
-}
-#input{
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    left:0;
-    top:0;
-    background: transparent;
-    color: transparent;
-    caret-color: white;
-
-    border: none;
-    outline: none;
-    resize: none;
-
-    border-radius: 12px;
-    padding: 1.25rem;
-
-    overflow: hidden;
-}
-
-.btn{
-    justify-self: center;
-    width: 100%;
-    height: auto;
-    padding: 0.6rem ;
-    border-radius: 0.4rem;
-    border: none;
-    cursor: pointer;
-    background-color: rgb(213, 224, 238);
-}
-
-.btn:hover {
-  background-color: rgba(197, 207, 220, 0.552);
-}
-
-#input:focus {
-  outline: none;
+  padding: 1.35rem;           
 }
 
 .typingWrapper:focus-within {
-  border-color: #c1e3f0;
+  border-color: #7dd3fc;
+}
+
+#input {
+  position: absolute;
+  inset: 0;
+
+  padding: 1.35rem;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+
+  border: none;
+  outline: none;
+  resize: none;
+  border-radius: 14px;
+
+  overflow: hidden;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 0.25rem;
+}
+
+.l {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.stats h2 {
+  font-size: 1.6rem;
+  letter-spacing: 0.3px;
+}
+
+.stats p {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+
+.btn {
+  justify-self: center;
+  width: 100%;
+  padding: 0.65rem;
+
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+
+  background-color: #dbe6f3;
+  color: #0b1020;
+  font-weight: 600;
+
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  background-color: #cfd9e6;
+  transform: translateY(-1px);
+}
+
+.correct { color: #22c55e; }
+.incorrect { color: #ef4444; }
+.active { border-bottom: 2px solid #38bdf8; }
+
+.textArea {
+      font-size: 1.4rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 64px;
+
+  background-color: #323a5a;
+  border-bottom: 1px solid #2a3470;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 2rem;
+  z-index: 1000;
+}
+
+.nav-left {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.5px;
+}
+
+.nav-right .github-link {
+  text-decoration: none;
+  color: #7dd3fc;
+  font-weight: 500;
+  border: 1px solid #7dd3fc;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.45rem;
+
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-right .github-link:hover {
+  background-color: #7dd3fc;
+  color: #0b1020;
 }
 
