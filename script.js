@@ -25,7 +25,8 @@ const accuracyEl = document.getElementById("accuracy_");
 
 const resetBtn = document.querySelector(".btn");
 
-const leaderboardListEl = document.getElementById("leaderboardList");
+const highScoresListEl = document.getElementById("highScoresList");
+const recentScoresListEl = document.getElementById("recentScoresList");
 
 let currentText = "";
 let timeLeft = TEST_DURATION;
@@ -98,21 +99,22 @@ function renderParagraph(text){
     function calculateWPM(correctCount) {
         if (!startTime) return 0;
         
-        const endTime = Date.now();
-        const timeSpentInSeconds = (endTime - startTime) / 1000;
+        let timeElapsed = (Date.now() - startTime) / 1000;
         
-        // Avoid division by zero or very small numbers that cause WPM spikes
-        if (timeSpentInSeconds < 0.5) return 0;
+        // Stabilize at start
+        if (timeElapsed < 1) timeElapsed = 1;
+        // Cap at test duration
+        if (timeElapsed > TEST_DURATION) timeElapsed = TEST_DURATION;
 
-        const timeSpentInMinutes = timeSpentInSeconds / 60;
+        const timeInMinutes = timeElapsed / 60;
         
-        // Use correctCount if provided, otherwise count from DOM
+        // Count correct characters
         const chars = correctCount !== undefined 
             ? correctCount 
             : textArea.querySelectorAll(".correct").length;
         
-        // Standard WPM: (Correct Characters / 5) / Time in Minutes
-        const wpm = Math.round((chars / 5) / timeSpentInMinutes);
+        // WPM = (Correct Characters / 5) / Time
+        const wpm = Math.round((chars / 5) / timeInMinutes);
 
         speedEl.textContent = wpm;
         return wpm;
@@ -121,27 +123,35 @@ function renderParagraph(text){
     function saveScore(wpm, accuracy) {
         const scores = JSON.parse(localStorage.getItem("typeninja_scores")) || [];
         const newScore = {
+            id: Date.now(),
             wpm,
             accuracy,
             date: new Date().toLocaleDateString()
         };
         
         scores.push(newScore);
-        // Sort by WPM descending, then accuracy descending
-        scores.sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy);
-        
-        // Keep top 5
-        const topScores = scores.slice(0, 5);
-        localStorage.setItem("typeninja_scores", JSON.stringify(topScores));
+        // Save all but we will filter in UI
+        localStorage.setItem("typeninja_scores", JSON.stringify(scores));
         updateLeaderboardUI();
     }
 
     function updateLeaderboardUI() {
         const scores = JSON.parse(localStorage.getItem("typeninja_scores")) || [];
-        leaderboardListEl.innerHTML = "";
+        
+        // High Scores: top 5 by WPM
+        const highScores = [...scores].sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy).slice(0, 5);
+        
+        // Recent Scores: last 5 by date/id
+        const recentScores = [...scores].sort((a, b) => b.id - a.id).slice(0, 5);
 
+        renderScoreList(highScoresListEl, highScores);
+        renderScoreList(recentScoresListEl, recentScores);
+    }
+
+    function renderScoreList(element, scores) {
+        element.innerHTML = "";
         if (scores.length === 0) {
-            leaderboardListEl.innerHTML = '<li class="empty">No scores yet!</li>';
+            element.innerHTML = '<li class="empty">No scores yet!</li>';
             return;
         }
 
@@ -152,7 +162,7 @@ function renderParagraph(text){
                 <span class="wpm">${score.wpm} WPM</span>
                 <span class="acc">${score.accuracy}% ACC</span>
             `;
-            leaderboardListEl.appendChild(li);
+            element.appendChild(li);
         });
     }
 

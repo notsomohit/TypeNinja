@@ -3,54 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TypeNinja | Speed test</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
+    <title>TypeNinja | Master Your Speed</title>
+    <!-- Modern Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
+<body class="dark-theme">
+    <!-- Sticky Glass Navbar -->
     <nav class="navbar">
-        <div class="nav-left">TypeNinja ⚡</div>
-        <div class="nav-right">
-            <a href="https://github.com/notsomohit" target="_blank" class="github-link">
-                GitHub
-            </a>
+        <div class="nav-container">
+            <div class="logo">
+                <span class="bolt">⚡</span> TypeNinja
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-item active">Test</a>
+                <a href="#" class="nav-item">Leaderboard</a>
+                <a href="https://github.com/notsomohit" target="_blank" class="github-btn">
+                    <span>GitHub</span>
+                </a>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <h1 id="heading">TypeNinja</h1>
-
-        <div class="typingWrapper">                 
-            <div class="textArea" id="textArea"></div>
-            <textarea id="input" autofocus></textarea>
-        </div>
-
-        <div class="stats">
-            <div class="time l">
-                <h2 id="timer">30</h2><p>s</p>
+    <main class="main-content">
+        <div class="test-section">
+            <!-- Progress Tracker -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
-            <div class="speed l">
-                <h2 id="speed_">50</h2><p>WPM</p>
+
+            <!-- Focus Stats -->
+            <div class="focus-stats">
+                <div class="stat-card">
+                    <span class="stat-label">Time Left</span>
+                    <div class="stat-value"><span id="timer">30</span><span class="unit">s</span></div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">WPM</span>
+                    <div class="stat-value" id="speed_">0</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Accuracy</span>
+                    <div class="stat-value"><span id="accuracy_">0</span><span class="unit">%</span></div>
+                </div>
             </div>
-            <div class="accuracy l">
-                <h2 id="accuracy_">90</h2><p>%</p>
+
+            <!-- Typing Engine -->
+            <div class="typing-container" id="typingContainer">
+                <div class="typing-area" id="textArea"></div>
+                <textarea id="input" autofocus spellcheck="false" autocomplete="off"></textarea>
+                <div class="cursor" id="customCursor"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn-primary" id="resetBtn">
+                    <span class="icon">↺</span> New Session
+                </button>
+                <p class="hint">Press <kbd>Tab</kbd> + <kbd>Enter</kbd> to quickly restart</p>
             </div>
         </div>
 
-        <div class="newSession">
-            <button class="btn">New Session</button>
-        </div>
+        <!-- Sidebar / Results Section -->
+        <aside class="sidebar">
+            <div class="leaderboard-card glass">
+                <div class="card-header">
+                    <h3>🏆 High Scores</h3>
+                </div>
+                <ul class="score-list" id="highScoresList">
+                    <li class="empty">No scores yet</li>
+                </ul>
+            </div>
 
-        <div class="leaderboard">
-            <h3>Leaderboard</h3>
-            <ul id="leaderboardList">
-                <li class="empty">No scores yet!</li>
-            </ul>
-        </div>
-    </div>
+            <div class="leaderboard-card glass">
+                <div class="card-header">
+                    <h3>🕒 Recent Activity</h3>
+                </div>
+                <ul class="score-list" id="recentScoresList">
+                    <li class="empty">No scores yet</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
 
     <script src="script.js"></script>
 </body>
