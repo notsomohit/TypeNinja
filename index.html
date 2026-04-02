@@ -55,24 +55,6 @@
                 <div class="typing-area" id="textArea"></div>
                 <textarea id="input" autofocus spellcheck="false" autocomplete="off"></textarea>
                 <div class="cursor" id="customCursor"></div>
-                
-                <!-- Results Overlay -->
-                <div class="results-overlay" id="resultsOverlay">
-                    <h2>Test Complete!</h2>
-                    <div class="results-grid">
-                        <div class="result-item">
-                            <span class="label">Speed</span>
-                            <div class="value"><span id="finalWpm">0</span><span class="unit">WPM</span></div>
-                        </div>
-                        <div class="result-item">
-                            <span class="label">Accuracy</span>
-                            <div class="value"><span id="finalAcc">0</span><span class="unit">%</span></div>
-                        </div>
-                    </div>
-                    <button class="btn-primary" id="restartBtn">
-                        <span class="icon">↺</span> Try Again
-                    </button>
-                </div>
             </div>
 
             <!-- Controls -->
@@ -105,6 +87,27 @@
             </div>
         </aside>
     </main>
+
+    <!-- Modal Layer -->
+    <div id="resultsWrapper" class="hidden">
+        <div class="modal-overlay"></div>
+        <div class="results-modal">
+            <h2>Test Complete!</h2>
+            <div class="results-grid">
+                <div class="result-item">
+                    <span class="label">Speed</span>
+                    <div class="value"><span id="finalWpm">0</span><span class="unit">WPM</span></div>
+                </div>
+                <div class="result-item">
+                    <span class="label">Accuracy</span>
+                    <div class="value"><span id="finalAcc">0</span><span class="unit">%</span></div>
+                </div>
+            </div>
+            <button class="btn-primary" id="restartBtn" style="margin: 0 auto;">
+                <span class="icon">↺</span> Try Again
+            </button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

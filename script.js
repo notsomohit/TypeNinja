@@ -19,7 +19,7 @@ const progressBar = document.getElementById("progressBar");
 const resetBtn = document.getElementById("resetBtn");
 const restartBtn = document.getElementById("restartBtn");
 const cursor = document.getElementById("customCursor");
-const resultsOverlay = document.getElementById("resultsOverlay");
+const resultsWrapper = document.getElementById("resultsWrapper");
 const finalWpmEl = document.getElementById("finalWpm");
 const finalAccEl = document.getElementById("finalAcc");
 const highScoresListEl = document.getElementById("highScoresList");
@@ -67,8 +67,7 @@ function resetStats() {
   input.focus();
   
   // Reset UI
-  resultsOverlay.classList.remove("show");
-  textArea.classList.remove("finished");
+  resultsWrapper.classList.add("hidden");
   typingContainer.classList.remove("finished");
   cursor.classList.remove("hidden");
   
@@ -135,7 +134,7 @@ function endSession() {
   // UI Updates
   finalWpmEl.textContent = finalWPM;
   finalAccEl.textContent = finalAcc;
-  resultsOverlay.classList.add("show");
+  resultsWrapper.classList.remove("hidden");
   typingContainer.classList.add("finished");
   cursor.classList.add("hidden");
   
