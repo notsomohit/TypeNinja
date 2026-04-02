@@ -132,6 +132,40 @@ body {
   align-items: start;
 }
 
+.leaderboard-view {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.leaderboard-view.hidden, .main-content.hidden {
+  display: none;
+}
+
+.leaderboard-card.large {
+  width: 100%;
+}
+
+.leaderboard-card.large .card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.leaderboard-card.large .score-list li {
+  padding: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.leaderboard-card.large .rank-initial {
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+}
+
 /* Test Section */
 .test-section {
   display: flex;

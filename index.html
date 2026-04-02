@@ -20,8 +20,8 @@
                 <span class="bolt">⚡</span> TypeNinja
             </div>
             <div class="nav-links">
-                <a href="#" class="nav-item active">Test</a>
-                <a href="#" class="nav-item">Leaderboard</a>
+                <a href="#" class="nav-item active" id="nav-test">Test</a>
+                <a href="#" class="nav-item" id="nav-leaderboard">Leaderboard</a>
                 <a href="https://github.com/notsomohit/TypeNinja" target="_blank" class="github-btn">
                     <span>GitHub</span>
                 </a>
@@ -29,7 +29,7 @@
         </div>
     </nav>
 
-    <main class="main-content">
+    <main class="main-content" id="testView">
         <div class="test-section">
             <!-- Progress Tracker -->
             <div class="progress-container">
@@ -89,6 +89,18 @@
                 </ul>
             </div>
         </aside>
+    </main>
+
+    <!-- Leaderboard View -->
+    <main class="leaderboard-view hidden" id="leaderboardView">
+        <div class="leaderboard-card glass large">
+            <div class="card-header">
+                <h2>🏆 All-Time High Scores</h2>
+            </div>
+            <ul class="score-list" id="fullLeaderboardList">
+                <li class="empty">No scores yet</li>
+            </ul>
+        </div>
     </main>
 
     <!-- Modal Layer -->

@@ -24,6 +24,11 @@ const finalWpmEl = document.getElementById("finalWpm");
 const finalAccEl = document.getElementById("finalAcc");
 const highScoresListEl = document.getElementById("highScoresList");
 const recentScoresListEl = document.getElementById("recentScoresList");
+const navTest = document.getElementById("nav-test");
+const navLeaderboard = document.getElementById("nav-leaderboard");
+const testView = document.getElementById("testView");
+const leaderboardView = document.getElementById("leaderboardView");
+const fullLeaderboardListEl = document.getElementById("fullLeaderboardList");
 
 // State
 let timeLeft = TEST_DURATION;
@@ -210,9 +215,12 @@ function updateLeaderboardUI() {
   const highScores = [...scores].sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy).slice(0, 5);
   // Recent Activity (Last 5)
   const recentScores = [...scores].sort((a, b) => b.id - a.id).slice(0, 5);
+  // Full Leaderboard (Top 25)
+  const allTimeHighScores = [...scores].sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy).slice(0, 25);
 
   renderScoreList(highScoresListEl, highScores);
   renderScoreList(recentScoresListEl, recentScores);
+  if (fullLeaderboardListEl) renderScoreList(fullLeaderboardListEl, allTimeHighScores);
 }
 
 function renderScoreList(element, scores) {
@@ -259,6 +267,27 @@ restartBtn.addEventListener("click", () => {
   resetStats();
   init();
 });
+
+// Navigation Handling
+if (navTest && navLeaderboard) {
+  navTest.addEventListener("click", (e) => {
+    e.preventDefault();
+    navTest.classList.add("active");
+    navLeaderboard.classList.remove("active");
+    testView.classList.remove("hidden");
+    leaderboardView.classList.add("hidden");
+    if (!input.disabled) input.focus();
+  });
+
+  navLeaderboard.addEventListener("click", (e) => {
+    e.preventDefault();
+    navLeaderboard.classList.add("active");
+    navTest.classList.remove("active");
+    leaderboardView.classList.remove("hidden");
+    testView.classList.add("hidden");
+    updateLeaderboardUI();
+  });
+}
 
 // Start
 init();
