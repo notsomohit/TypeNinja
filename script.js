@@ -41,12 +41,14 @@ function init() {
 }
 
 function renderParagraph(text) {
-  textArea.innerHTML = "";
-  text.split("").forEach((char, index) => {
+  textArea.querySelectorAll("span").forEach(span => span.remove());
+  const fragment = document.createDocumentFragment();
+  text.split("").forEach((char) => {
     const span = document.createElement("span");
     span.textContent = char;
-    textArea.appendChild(span);
+    fragment.appendChild(span);
   });
+  textArea.insertBefore(fragment, cursor);
   updateCursor();
 }
 
@@ -75,6 +77,10 @@ function resetStats() {
   const spans = textArea.querySelectorAll("span");
   spans.forEach(s => s.classList.remove("correct", "incorrect", "active"));
   if(spans[0]) spans[0].classList.add("active");
+  
+  // Reset container scroll
+  textArea.style.transform = "translateY(0)";
+  
   updateCursor();
 }
 
