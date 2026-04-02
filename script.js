@@ -1,193 +1,259 @@
 const TEST_DURATION = 30;
 
 const PARAGRAPHS = [
-   "The train arrived much later than expected, long after the scheduled time had passed, yet something unusual happened in the waiting room. No one complained or showed anger. Instead, the quiet space slowly filled with understanding as strangers exchanged small smiles and shared brief conversations. The delay softened everyone, replacing impatience with calm acceptance. In that still moment, people felt more connected than they would have during a rushed journey. Sometimes delays do not steal time from us; instead, they gently bring people together in ways that speed never allows.",
-
-  "He carried the notebook everywhere he went, treating it like a precious possession, yet he never opened it in front of anyone. When people asked what was written inside, he only smiled and said it was full of unfinished thoughts. The notebook held ideas that were not ready to be shared, dreams still forming, and words waiting for the right moment. Some thoughts need time to grow silently before they are written, and rushing them would only take away their meaning.",
-
-  "Every night, the streetlight flickered weakly before glowing steadily, struggling quietly before fulfilling its purpose. People walking past never noticed the effort it took to shine, seeing only the final result. The brief moments of darkness were invisible to them. Even light must fight through darkness before it becomes useful, just like people who grow stronger through unseen struggles before they can guide others.",
-
-  "Progress rarely arrives with excitement or dramatic change. It hides within routine, repetition, and consistent effort that feels ordinary and slow. Day after day, the work continues without visible results, making it easy to doubt the process. Then one day, without warning, the task that once felt impossible feels normal. That is when you realize progress was happening all along, quietly shaping you in the background.",
-
-  "Change does not always announce itself loudly or suddenly. Often, it enters life slowly, blending into daily habits until it becomes part of who you are. You may not notice it at first, but over time it reshapes your thinking, behavior, and perspective. When you finally look back, the old version of yourself feels distant, reminding you that growth is usually silent but deeply powerful.",
-
-  "Not knowing where you are going does not mean you are lost. Uncertainty is often a natural part of movement and growth. When you keep moving forward, even without clear direction, each step reveals something new. Action brings clarity that overthinking never can. Direction slowly forms through motion, proving that progress begins when you stop standing still."
-
+  "The train arrived much later than expected, long after the scheduled time had passed, yet something unusual happened in the waiting room. No one complained or showed anger. Instead, the quiet space slowly filled with understanding as strangers exchanged small smiles and shared brief conversations. The delay softened everyone, replacing impatience with calm acceptance.",
+  "He carried the notebook everywhere he went, treating it like a precious possession, yet he never opened it in front of anyone. When people asked what was written inside, he only smiled and said it was full of unfinished thoughts. The notebook held ideas that were not ready to be shared, dreams still forming, and words waiting for the right moment.",
+  "Every night, the streetlight flickered weakly before glowing steadily, struggling quietly before fulfilling its purpose. People walking past never noticed the effort it took to shine, seeing only the final result. The brief moments of darkness were invisible to them. Even light must fight through darkness before it becomes useful.",
+  "Progress rarely arrives with excitement or dramatic change. It hides within routine, repetition, and consistent effort that feels ordinary and slow. Day after day, the work continues without visible results, making it easy to doubt the process. Then one day, without warning, the task that once felt impossible feels normal.",
+  "Change does not always announce itself loudly or suddenly. Often, it enters life slowly, blending into daily habits until it becomes part of who you are. You may not notice it at first, but over time it reshapes your thinking, behavior, and perspective. When you finally look back, the old version of yourself feels distant."
 ];
 
-
+// DOM Elements
 const textArea = document.getElementById("textArea");
+const typingContainer = document.getElementById("typingContainer");
 const input = document.getElementById("input");
-
 const timerEl = document.getElementById("timer");
 const speedEl = document.getElementById("speed_");
 const accuracyEl = document.getElementById("accuracy_");
-
-const resetBtn = document.querySelector(".btn");
-
+const progressBar = document.getElementById("progressBar");
+const resetBtn = document.getElementById("resetBtn");
+const restartBtn = document.getElementById("restartBtn");
+const cursor = document.getElementById("customCursor");
+const resultsOverlay = document.getElementById("resultsOverlay");
+const finalWpmEl = document.getElementById("finalWpm");
+const finalAccEl = document.getElementById("finalAcc");
 const highScoresListEl = document.getElementById("highScoresList");
 const recentScoresListEl = document.getElementById("recentScoresList");
 
-let currentText = "";
+// State
 let timeLeft = TEST_DURATION;
 let timer = null;
 let started = false;
 let startTime = null;
+let charIndex = 0;
 
-// Load leaderboard on start
-updateLeaderboardUI();
+// Initialization
+function init() {
+  const randomIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+  renderParagraph(PARAGRAPHS[randomIndex]);
+  resetStats();
+  updateLeaderboardUI();
+}
 
-function renderParagraph(text){
-    textArea.innerHTML="";
-    text.split("").forEach((el,index) => {
-        const span = document.createElement("span");
-        span.textContent = el;
-        if(index === 0) span.classList.add("active");
-        textArea.appendChild(span);
-    });
-};
+function renderParagraph(text) {
+  textArea.innerHTML = "";
+  text.split("").forEach((char, index) => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    textArea.appendChild(span);
+  });
+  updateCursor();
+}
 
- function startTimer() {
-      timer = setInterval(() => {
-        timeLeft--;
-        timerEl.textContent = timeLeft;
+function resetStats() {
+  clearInterval(timer);
+  started = false;
+  timeLeft = TEST_DURATION;
+  startTime = null;
+  charIndex = 0;
+  
+  timerEl.textContent = TEST_DURATION;
+  speedEl.textContent = "0";
+  accuracyEl.textContent = "0";
+  progressBar.style.width = "0%";
+  
+  input.value = "";
+  input.disabled = false;
+  input.focus();
+  
+  // Reset UI
+  resultsOverlay.classList.remove("show");
+  textArea.classList.remove("finished");
+  typingContainer.classList.remove("finished");
+  cursor.classList.remove("hidden");
+  
+  // Clear classes
+  const spans = textArea.querySelectorAll("span");
+  spans.forEach(s => s.classList.remove("correct", "incorrect", "active"));
+  if(spans[0]) spans[0].classList.add("active");
+  updateCursor();
+}
 
-        if (timeLeft === 0) {
-          clearInterval(timer);
-          input.disabled = true;
-          const finalWPM = calculateWPM();
-          const accuracy = parseInt(accuracyEl.textContent);
-          saveScore(finalWPM, accuracy);
-        }
-      }, 1000);
+// Cursor Logic
+function updateCursor() {
+  const spans = textArea.querySelectorAll("span");
+  const activeSpan = spans[charIndex];
+  
+  if (activeSpan) {
+    const rect = activeSpan.getBoundingClientRect();
+    
+    cursor.style.left = `${activeSpan.offsetLeft}px`;
+    cursor.style.top = `${activeSpan.offsetTop}px`;
+    cursor.style.height = `${activeSpan.offsetHeight}px`;
+    
+    // Smoothly scroll container if needed
+    if (activeSpan.offsetTop > 100) {
+        textArea.style.transform = `translateY(-${activeSpan.offsetTop - 50}px)`;
+    } else {
+        textArea.style.transform = `translateY(0)`;
     }
+  }
+}
 
-    input.addEventListener("input", () => {
-      if (!started) {
-        started = true;
-        startTime = Date.now();
-        startTimer();
+// Timer & Metrics
+function startTimer() {
+  startTime = Date.now();
+  timer = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = timeLeft;
+    
+    // Progress Bar
+    const progress = ((TEST_DURATION - timeLeft) / TEST_DURATION) * 100;
+    progressBar.style.width = `${progress}%`;
+
+    if (timeLeft <= 0) {
+      endSession();
+    }
+  }, 1000);
+}
+
+function calculateWPM(correctCount) {
+  if (!startTime) return;
+  const timeElapsed = (Date.now() - startTime) / 1000 / 60; // in minutes
+  if (timeElapsed <= 0) return;
+  
+  const wpm = Math.round((correctCount / 5) / timeElapsed);
+  speedEl.textContent = wpm;
+}
+
+function endSession() {
+  clearInterval(timer);
+  input.disabled = true;
+  const finalWPM = parseInt(speedEl.textContent);
+  const finalAcc = parseInt(accuracyEl.textContent);
+  
+  // UI Updates
+  finalWpmEl.textContent = finalWPM;
+  finalAccEl.textContent = finalAcc;
+  resultsOverlay.classList.add("show");
+  typingContainer.classList.add("finished");
+  cursor.classList.add("hidden");
+  
+  saveScore(finalWPM, finalAcc);
+}
+
+// Input Handling
+input.addEventListener("input", (e) => {
+  if (!started) {
+    started = true;
+    startTimer();
+  }
+
+  const spans = textArea.querySelectorAll("span");
+  const typedValue = input.value;
+  charIndex = typedValue.length;
+
+  let correctCount = 0;
+
+  spans.forEach((span, index) => {
+    span.classList.remove("active", "correct", "incorrect");
+    
+    if (index < charIndex) {
+      if (typedValue[index] === span.textContent) {
+        span.classList.add("correct");
+        correctCount++;
+      } else {
+        span.classList.add("incorrect");
       }
-
-      const spans = textArea.querySelectorAll("span");
-      const typed = input.value.split("");
-      let correctCount = 0;
-
-      spans.forEach((span, index) => {
-        span.classList.remove("correct", "incorrect", "active");
-
-        if (typed[index] == null) {
-          if (index === typed.length) span.classList.add("active");
-        } else if (typed[index] === span.textContent) {
-          span.classList.add("correct");
-          correctCount++;
-        } else {
-          span.classList.add("incorrect");
-        }
-      });
-
-      calculateWPM(correctCount);
-
-      const accuracy =
-        typed.length === 0
-          ? 0
-          : Math.round((correctCount / typed.length) * 100);
-
-      accuracyEl.textContent = accuracy;
-    });
-
-    function calculateWPM(correctCount) {
-        if (!startTime) return 0;
-        
-        let timeElapsed = (Date.now() - startTime) / 1000;
-        
-        // Stabilize at start
-        if (timeElapsed < 1) timeElapsed = 1;
-        // Cap at test duration
-        if (timeElapsed > TEST_DURATION) timeElapsed = TEST_DURATION;
-
-        const timeInMinutes = timeElapsed / 60;
-        
-        // Count correct characters
-        const chars = correctCount !== undefined 
-            ? correctCount 
-            : textArea.querySelectorAll(".correct").length;
-        
-        // WPM = (Correct Characters / 5) / Time
-        const wpm = Math.round((chars / 5) / timeInMinutes);
-
-        speedEl.textContent = wpm;
-        return wpm;
+    } else if (index === charIndex) {
+      span.classList.add("active");
     }
+  });
 
-    function saveScore(wpm, accuracy) {
-        const scores = JSON.parse(localStorage.getItem("typeninja_scores")) || [];
-        const newScore = {
-            id: Date.now(),
-            wpm,
-            accuracy,
-            date: new Date().toLocaleDateString()
-        };
-        
-        scores.push(newScore);
-        // Save all but we will filter in UI
-        localStorage.setItem("typeninja_scores", JSON.stringify(scores));
-        updateLeaderboardUI();
-    }
+  // Update Stats
+  calculateWPM(correctCount);
+  const accuracy = charIndex === 0 ? 0 : Math.round((correctCount / charIndex) * 100);
+  accuracyEl.textContent = accuracy;
+  
+  updateCursor();
 
-    function updateLeaderboardUI() {
-        const scores = JSON.parse(localStorage.getItem("typeninja_scores")) || [];
-        
-        // High Scores: top 5 by WPM
-        const highScores = [...scores].sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy).slice(0, 5);
-        
-        // Recent Scores: last 5 by date/id
-        const recentScores = [...scores].sort((a, b) => b.id - a.id).slice(0, 5);
+  // Auto-end if paragraph finished
+  if (charIndex === spans.length) {
+    endSession();
+  }
+});
 
-        renderScoreList(highScoresListEl, highScores);
-        renderScoreList(recentScoresListEl, recentScores);
-    }
+// Leaderboard Persistence
+function saveScore(wpm, accuracy) {
+  const scores = JSON.parse(localStorage.getItem("typeninja_premium_scores")) || [];
+  const newScore = {
+    id: Date.now(),
+    wpm,
+    accuracy,
+    date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  };
+  
+  scores.push(newScore);
+  localStorage.setItem("typeninja_premium_scores", JSON.stringify(scores));
+  updateLeaderboardUI();
+}
 
-    function renderScoreList(element, scores) {
-        element.innerHTML = "";
-        if (scores.length === 0) {
-            element.innerHTML = '<li class="empty">No scores yet!</li>';
-            return;
-        }
+function updateLeaderboardUI() {
+  const scores = JSON.parse(localStorage.getItem("typeninja_premium_scores")) || [];
+  
+  // High Scores (Top 5)
+  const highScores = [...scores].sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy).slice(0, 5);
+  // Recent Activity (Last 5)
+  const recentScores = [...scores].sort((a, b) => b.id - a.id).slice(0, 5);
 
-        scores.forEach(score => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <span class="date">${score.date}</span>
-                <span class="wpm">${score.wpm} WPM</span>
-                <span class="acc">${score.accuracy}% ACC</span>
-            `;
-            element.appendChild(li);
-        });
-    }
+  renderScoreList(highScoresListEl, highScores);
+  renderScoreList(recentScoresListEl, recentScores);
+}
 
-    function resetTest() {
-        clearInterval(timer);
-        started = false;
-        timeLeft = TEST_DURATION;
-        startTime = null; 
+function renderScoreList(element, scores) {
+  element.innerHTML = "";
+  if (scores.length === 0) {
+    element.innerHTML = '<li class="empty">No sessions yet</li>';
+    return;
+  }
 
-        timerEl.textContent = TEST_DURATION;
-        speedEl.textContent = 0;
-        accuracyEl.textContent = 0;
+  scores.forEach((score, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="rank-initial">${score.wpm > 0 ? score.wpm.toString()[0] : '0'}</div>
+      <div class="score-info">
+        <div>
+          <span class="score-wpm">${score.wpm} WPM</span>
+          <span class="score-acc">${score.accuracy}% ACC</span>
+        </div>
+        <div class="score-date">${score.date}</div>
+      </div>
+    `;
+    element.appendChild(li);
+  });
+}
 
-        input.value = "";
-        input.disabled = false;
-        input.focus();
-
-        init();
-    }
-
-    function init() {
-      const randomIndex = Math.floor(Math.random() * PARAGRAPHS.length);
-      currentText = PARAGRAPHS[randomIndex];
-      renderParagraph(currentText);
-    }
-
-    resetBtn.addEventListener("click", resetTest);
+// Shortcuts
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    resetBtn.focus();
+  }
+  if (e.key === "Enter" && document.activeElement === resetBtn) {
+    resetStats();
     init();
+  }
+});
+
+resetBtn.addEventListener("click", () => {
+  resetStats();
+  init();
+});
+
+restartBtn.addEventListener("click", () => {
+  resetStats();
+  init();
+});
+
+// Start
+init();
